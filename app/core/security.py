@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Request, status
 from app.core.config import get_settings
 import uuid
 from app.models.user import RefreshToken
@@ -67,3 +67,15 @@ def verify_refresh_token(db, token: str):
         raise HTTPException(status_code=401)
 
     return payload["sub"], jti
+
+def get_current_user(request: Request) -> str:
+    token = request.cookies.get("access_token")
+
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+        )
+
+    user_id = decode_token(token, "access")
+    return user_id
