@@ -4,14 +4,15 @@ from app.services.auth_service import authenticate_user,revoke_refresh_token
 from app.core.config import get_settings
 from sqlalchemy.orm import Session
 from app.db.session import get_db
+from fastapi import Form
 router = APIRouter()
 
 settings = get_settings()
 
 
 @router.post("/login")
-def login(response: Response, email: str, password: str):
-    user = authenticate_user(email, password)
+def login(response: Response, email: str=Form(...), password: str=Form(...),db: Session = Depends(get_db)):
+    user = authenticate_user(db,email, password)
 
     access_token = create_access_token(str(user.id))
     refresh_token = create_refresh_token(str(user.id))
