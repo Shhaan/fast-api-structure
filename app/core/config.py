@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     SECRET_KEY: str  
     ALGORITHM: str 
    
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    ACCESS_TOKEN_EXPIRE_MINUTES: int  
+    REFRESH_TOKEN_EXPIRE_DAYS: int  
  
     BACKEND_CORS_ORIGINS: List[str]  
     DATABASE_URL : str

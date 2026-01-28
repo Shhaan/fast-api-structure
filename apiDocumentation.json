@@ -1,0 +1,152 @@
+{
+  "info": {
+    "_postman_id": "dc855f43-5caf-40e3-be62-b757fc933153",
+    "name": "FastApi",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "33841861"
+  },
+  "item": [
+    {
+      "name": "refresh",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "{{base}}/api/v1/auth/refresh/",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "refresh",
+            ""
+          ]
+        },
+        "description": "## 📌 Refresh Token API\n\n**Endpoint**  \n`POST /api/v1/auth/refresh/`\n\n---\n\n### 📄 Description\n\nRefreshes the authentication session by:\n\n- Validating the existing **refresh token**\n    \n- Revoking the used refresh token\n    \n- Issuing a new **access token** and **refresh token**\n    \n- Updating both tokens in **HTTP-only cookies**\n    \n\n---\n\n### 🔐 Authentication\n\n✅ **Required (via cookies)**\n\n- `refresh_token` must be present and valid\n    \n\n---\n\n### 📥 Request Headers / Cookies\n\n| Name | Type | Required | Description |\n| --- | --- | --- | --- |\n| `refresh_token` | Cookie | ✅ Yes | Valid refresh token |\n\n---\n\n### 📤 Request Body\n\n❌ No request body required\n\n---\n\n### ✅ Success Response (200)\n\n```\n{\n  \"error\": false,\n  \"message\": \"Token Refreshed\",\n  \"data\": null\n}\n\n ```\n\n---\n\n### 🍪 Cookies Set on Success\n\n| Cookie | Description |\n| --- | --- |\n| `access_token` | New short-lived access token |\n| `refresh_token` | New long-lived refresh token |\n\n**Cookie properties:**\n\n- `HttpOnly`\n    \n- `Secure`\n    \n- `SameSite=None`\n    \n\n---\n\n### ❌ Error Responses\n\n#### Refresh token not found (400)\n\n```\n{\n  \"error\": true,\n  \"message\": \"Refresh token not found\",\n  \"data\": null\n}\n\n ```\n\n#### Invalid or expired refresh token (401)\n\n```\n{\n  \"error\": true,\n  \"message\": \"Invalid or expired token\",\n  \"data\": null\n}\n\n ```\n\n---\n\n### 🔁 Refresh Flow\n\n1. Client sends request with `refresh_token` cookie\n    \n2. Server validates refresh token\n    \n3. Old refresh token is revoked\n    \n4. New tokens are generated\n    \n5. Cookies are updated\n    \n6. Session continues without re-login\n    \n\n---\n\n### 📝 Notes\n\n- Refresh tokens are **rotated** on every use\n    \n- Reusing a revoked refresh token will fail\n    \n- Access token is never exposed in the response body\n    \n- Client should call this endpoint when access token expires"
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "email",
+              "value": "email@gmail.com",
+              "type": "text",
+              "uuid": "dea8a84e-1e9a-4881-9941-80380939a1a8",
+              "description": "Required"
+            },
+            {
+              "key": "password",
+              "value": "email",
+              "type": "text",
+              "uuid": "06df1ff5-fad9-4835-8b36-26a788fcd7cf",
+              "description": "Required"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base}}/api/v1/auth/login/",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login",
+            ""
+          ]
+        },
+        "description": "## 📌 Login API\n\n**Endpoint**  \n`POST /api/v1/auth/login/`\n\n---\n\n### 📄 Description\n\nAuthenticates a user using email and password.\n\nOn successful login:\n\n- Generates a new **access token** and **refresh token**\n    \n- Stores both tokens in **HTTP-only cookies**\n    \n\n---\n\n### 🔐 Authentication\n\n❌ Not required (public endpoint)\n\n---\n\n### 🔐 Request Type\n\n`multipart/form-data`\n\n---\n\n### 🧾 Request Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| `email` | string | ✅ Yes | Registered user email |\n| `password` | string | ✅ Yes | User password |\n\n---\n\n### 📤 Example Request (form-data)\n\n```\nemail: email@gmail.com\npassword: email\n\n ```\n\n---\n\n### ✅ Success Response (200)\n\n```\n{\n  \"error\": false,\n  \"message\": \"Login successful\",\n  \"data\": {\n        \"email\": \"email@gmail.com\",\n        \"name\": \"\",\n        \"id\": 1\n    }\n}\n\n ```\n\n---\n\n### 🍪 Cookies Set on Success\n\n| Cookie | Description |\n| --- | --- |\n| `access_token` | Short-lived access token |\n| `refresh_token` | Long-lived refresh token |\n\n**Cookie properties:**\n\n- `HttpOnly`\n    \n- `Secure`\n    \n- `SameSite=None`\n    \n- Access token expires in **15 minutes**\n    \n- Refresh token expires in **7 days**\n    \n\n---\n\n### ❌ Error Responses\n\n#### User not found / invalid credentials (404)\n\n```\n{\n  \"error\": true,\n  \"message\": \"User Not Found\",\n  \"data\": null\n}\n\n ```\n\n#### Validation error (400)\n\n```\n{\n  \"error\": true,\n  \"message\": \"Invalid input\",\n  \"data\": null\n}\n\n ```\n\n---\n\n### 📝 Notes\n\n- Passwords are securely hashed and verified\n    \n- Tokens are never exposed in the response body\n    \n- Cookies are required for subsequent authenticated requests\n    \n\n---\n\n### 🔁 Authentication Flow\n\n1. User submits email and password\n    \n2. Server validates credentials\n    \n3. Tokens are generated\n    \n4. Cookies are set\n    \n5. User is authenticated"
+      },
+      "response": []
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "{{base}}/api/v1/auth/logout/",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "logout",
+            ""
+          ]
+        },
+        "description": "## 📌 Logout API\n\n**Endpoint**  \n`POST /api/v1/auth/logout/`\n\n---\n\n### 📄 Description\n\nLogs out the currently authenticated user by:\n\n- Revoking the active **refresh token**\n    \n- Removing **access** and **refresh** cookies from the client\n    \n\n---\n\n### 🔐 Authentication\n\n✅ **Required**\n\n- User must be authenticated\n    \n- Authentication is done via **HTTP-only cookies**\n    \n    - `access_token`\n        \n    - `refresh_token`\n        \n\n---\n\n### 📥 Request Headers / Cookies\n\n| Name | Type | Required | Description |\n| --- | --- | --- | --- |\n| `access_token` | Cookie | ✅ Yes | Access token (used to authenticate user) |\n| `refresh_token` | Cookie | ✅ Yes | Refresh token (used to revoke session) |\n\n---\n\n### 📤 Request Body\n\n❌ No request body required\n\n---\n\n### ✅ Success Response (200)\n\n```\n{\n  \"error\": false,\n  \"message\": \"Logout successful\",\n  \"data\": null\n}\n\n ```\n\n---\n\n### ❌ Error Responses\n\n#### Not authenticated / Invalid token (401)\n\n```\n{\n  \"error\": true,\n  \"message\": \"Not authenticated\",\n  \"data\": null\n}\n\n ```\n\n#### Refresh token missing or invalid (400)\n\n```\n{\n  \"error\": true,\n  \"message\": \"Invalid or expired token\",\n  \"data\": null\n}\n\n ```\n\n---\n\n### 📝 Notes\n\n- This endpoint **revokes the refresh token** in the database\n    \n- Access and refresh cookies are **deleted from the client**\n    \n- After logout, the user must log in again to obtain new tokens\n    \n\n---\n\n### 🔁 Example Flow\n\n1. User sends `POST /auth/logout`\n    \n2. Backend verifies authentication\n    \n3. Refresh token is revoked\n    \n4. Cookies are deleted\n    \n5. Logout confirmed"
+      },
+      "response": []
+    },
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "email",
+              "value": "email@gmail.com",
+              "type": "text",
+              "uuid": "dea8a84e-1e9a-4881-9941-80380939a1a8",
+              "description": "Required + unique"
+            },
+            {
+              "key": "password",
+              "value": "email",
+              "type": "text",
+              "uuid": "06df1ff5-fad9-4835-8b36-26a788fcd7cf",
+              "description": "required"
+            },
+            {
+              "key": "name",
+              "value": "",
+              "description": "not required",
+              "type": "text",
+              "uuid": "75db9687-6081-4a41-8535-366c9250388e",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base}}/api/v1/user/create-user/",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "create-user",
+            ""
+          ]
+        },
+        "description": "**Endpoint**  \n`POST /api/v1/user/create-user/`\n\n---\n\n### 📄 Description\n\nCreates a new user account.\n\n- **Email** must be unique\n    \n- **Password** is required\n    \n- **Name** is optional\n    \n\n---\n\n### 🔐 Request Type\n\n`multipart/form-data`\n\n---\n\n### 🧾 Request Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| `email` | string | ✅ Yes | User email address (must be unique) |\n| `password` | string | ✅ Yes | User password |\n| `name` | string | ❌ No | User name (optional) |\n\nStartFragment\n\n### 📤 Example Request (form-data)\n\n```\nemail: email@gmail.com\npassword: email1\nname: shan\n\n ```\n\n_(You may omit_ `_name_` _if not required.)_\n\n---\n\n### ✅ Success Response (201)\n\n```\n{\n  \"error\": false,\n  \"message\": \"User Created Successfully\",\n  \"data\": {\"email\": email@gmail.com}\n}\n\n ```\n\n---\n\n### ❌ Error Responses\n\n#### Email already exists (400)\n\n```\n{\n  \"error\": true,\n  \"message\": \"Email already exists\",\n  \"data\": null\n}\n\n ```\n\n#### Validation error (400)\n\n```\n{\n  \"error\": true,\n  \"message\": \"Invalid input\",\n  \"data\": null\n}\n\n ```"
+      },
+      "response": []
+    }
+  ]
+}
