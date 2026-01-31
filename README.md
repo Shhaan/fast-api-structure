@@ -69,6 +69,17 @@ pip install -r requirements.txt
 
 Ensure PostgreSQL is running and configure your database credentials in:
 
+Need to add .env in the the outside the app inside the main folder
+ex
+
+SECRET_KEY = 
+DATABASE_URL=
+DEBUG =
+BACKEND_CORS_ORIGINS =
+ALGORITHM  =
+ACCESS_TOKEN_EXPIRE_MINUTES  =
+REFRESH_TOKEN_EXPIRE_DAYS  =
+
 ```
 app/core/config.py
 ```
